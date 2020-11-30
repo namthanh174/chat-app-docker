@@ -1,7 +1,7 @@
 <div class="row">Count: <%= @count %></div>
 <%= link_to "Upload pokemons", pokemons_path, method: :post, class: "btn btn-primary" %><br />
 <%= link_to "Destroy all pokemons", pokemons_path, method: :delete, class: "btn btn-danger", :confirm => 'Are you sure?' %><br />
-<% if false %>
+<% if true %>
   <table class="table">
     <thead>
       <tr>
@@ -12,12 +12,12 @@
       </tr>
     </thead>
     <tbody>
-      <%= @pokemons.each do |pokemon| %>
+      <% @pokemons.limit(100).each do |pokemon| %>
         <tr>
           <th scope="row"><%= pokemon.pokedex_id %></th>
           <td><%= pokemon.name %></td>
           <td><%= pokemon.height %></td>
-          <td>@<%= pokemon.weight %></td>
+          <td><%= pokemon.weight %></td>
         </tr>
       <% end %>
     </tbody>

@@ -3,9 +3,11 @@ services:
   db:
     image: postgres
     volumes:
-      - 'postgres:/var/lib/postgresql/data'
-    environment:
-      POSTGRES_PASSWORD: password
+      - 'postgres_data:/var/lib/postgresql/data'
+    env_file:
+      - .env
+    # environment:
+    #   POSTGRES_PASSWORD: password
   redis:
     image: 'redis:5-alpine'
     command: redis-server
@@ -13,6 +15,19 @@ services:
       - '6379:6379'
     volumes:
       - 'redis:/data'
+  sidekiq:
+    depends_on:
+      - 'db'
+      - 'redis'
+    build: .
+    command: bundle exec sidekiq
+    volumes:
+      - '.:/project'
+      - '/project/tmp' # don't mount tmp directory
+    env_file:
+      - .env
+    # environment:
+    #   - REDIS_URL=redis://redis:6379/0
   web:
     build: .
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
@@ -22,10 +37,12 @@ services:
       - "3000:3000"
     depends_on:
       - db
-    environment:
-      - REDIS_URL=redis://redis:6379/0
+    env_file:
+      - .env
+    # environment:
+    #   - REDIS_URL=redis://redis:6379/0
 
 volumes:
   redis:
-  postgres:
+  postgres_data:
 
